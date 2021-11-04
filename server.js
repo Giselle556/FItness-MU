@@ -1,25 +1,53 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const morgan = require("morgan");
-const apiRoutes = require("./routes/api.js");
-const htmlRoutes = require("./routes/html.js")
+const apiRoutes = require("./routes/api-routes");
+const htmlRoutes = require("./routes/html-routes");
+const logger = require("morgan");
+const db = require("./models");
 
+// setting PORT
 const PORT = process.env.PORT || 3000;
 
+// creating instance of express
 const app = express();
-app.use(morgan("dev"));
 
+// logger middleware
+app.use(logger("dev"));
+
+// middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static("public"));
 
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/workout", {
-  useNewUrlParser: true,
-  useFindAndModify: false
+// reads public folder
+app.use(express.static("public"));
+// use routes
+app.use(apiRoutes);
+app.use(htmlRoutes);
+
+// mongoose connection
+mongoose.connect(
+  process.env.MONGODB_URI || "mongodb://localhost/fitness-tracker",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+    useCreateIndex: true,
+  }
+);
+
+const connection = mongoose.connection;
+
+// if successful mongoose connection
+connection.on("connected", () => {
+  console.log("Mongoose connected successfully.");
 });
 
-app.use(htmlRoutes);
-app.use(apiRoutes);
+// if unsuccessful mongoose connection
+connection.on("error", (err) => {
+  console.log("Mongoose connected error:" + err);
+});
+
+// listen on the PORT
 app.listen(PORT, () => {
   console.log(`App running on port ${PORT}!`);
 });
