@@ -14,6 +14,7 @@ Fitness Tracker that allows you to track your exercise type,duration,sets, and w
  # Images
 
 
+![image](https://user-images.githubusercontent.com/89003419/140259360-798e36c4-9263-4250-ad98-c54252cf286d.png)
 
 
 
